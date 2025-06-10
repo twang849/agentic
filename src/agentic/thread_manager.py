@@ -115,7 +115,7 @@ def init_thread_tracking(
         resume_thread_id: Optional[str] = None
     ) -> tuple[str,Callable]:
     """Helper function to set up thread tracking for an agent"""
-    thread_id = str(uuid4()) if resume_thread_id is None else resume_thread_id
+    thread_id = str(uuid4()) if (resume_thread_id is None or resume_thread_id == 'NEW') else resume_thread_id
     thread_manager = ThreadManager(
         initial_thread_id=thread_id,
         db_path=db_path
@@ -166,7 +166,7 @@ def reconstruct_chat_history_from_thread_logs(thread_logs: List[ThreadLog]) -> L
                 })
         
         # Handle assistant streaming responses from Output events  
-        elif event_name == "chat_output" and role == "assistant":
+        elif event_name == "chat_output" and role in ["assistant", "system"]:
             if current_assistant_message is None:
                 current_assistant_message = {
                     "role": "assistant",
