@@ -63,8 +63,10 @@ def install_dependencies():
     
     logger.info("Installing dashboard dependencies...")
     try:
+        # Only add the .cmd extension if on Windows, otherwise use regular command
+        cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
         subprocess.run(
-            ["npm", "install"], 
+            [cmd, "install"], 
             cwd=DASHBOARD_ROOT, 
             check=True
         )
@@ -85,8 +87,10 @@ def build_dashboard():
     
     logger.info("Building dashboard...")
     try:
+        # Only add the .cmd extension if on Windows, otherwise use regular command
+        cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
         subprocess.run(
-            ["npm", "run", "build"], 
+            [cmd, "run", "build"], 
             cwd=DASHBOARD_ROOT, 
             check=True
         )
@@ -111,7 +115,9 @@ def run_built_dashboard(port: Optional[int] = None):
         logger.error("Node.js or npm not found. Required to run the dashboard.")
         return None
     
-    command = ["npm", "run", "start"]
+    # Only add the .cmd extension if on Windows, otherwise use regular command
+    cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
+    command = [cmd, "run", "start"]
     
     if port:
         command.extend(["--", "-p", str(port)])
@@ -136,7 +142,10 @@ def start_dashboard(port: Optional[int] = None, dev_mode: bool = False):
     Returns:
         subprocess.Popen: The process running the dashboard, or None if startup failed.
     """
-    command = ["npm", "run"]
+
+    # Only add the .cmd extension if on Windows, otherwise use regular command
+    cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
+    command = [cmd, "run"]
     if dev_mode:
         if not install_dependencies():
             return None
