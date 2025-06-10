@@ -4,7 +4,7 @@ Dashboard management module.
 This module provides functions for setting up, running, and managing
 the Next.js dashboard.
 """
-
+import os
 import subprocess
 import sys
 import time
@@ -25,13 +25,17 @@ def check_npm_dependencies():
         bool: True if Node.js and npm are installed, False otherwise.
     """
     try:
+
         node_version = subprocess.run(
             ["node", "--version"], 
             capture_output=True, 
             text=True
         ).stdout.strip()
+
+        # Only add the .cmd extension if on Windows, otherwise use regular command
+        cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
         npm_version = subprocess.run(
-            ["npm", "--version"], 
+            [cmd, "--version"], 
             capture_output=True, 
             text=True
         ).stdout.strip()
