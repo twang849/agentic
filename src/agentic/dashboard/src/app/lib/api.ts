@@ -69,6 +69,10 @@ export const agenticApi = {
   
     // Send a prompt to an agent, optionally continuing from a thread
   sendPrompt: async (agentPath: string, prompt: string, threadId?: string): Promise<Api.SendPromptResponse> => {
+    if (!threadId) {
+      // If no threadId is provided, we can create a new thread
+      threadId = 'NEW'
+    }
     const response = await authFetch(`/api${agentPath}/process`, {
       method: 'POST',
       headers: {

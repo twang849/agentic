@@ -3,7 +3,8 @@ from datetime import datetime
 
 from agentic.common import Agent, AgentRunner
 from agentic.db.db_manager import DatabaseManager
-from agentic.thread_manager import init_thread_tracking, disable_thread_tracking
+from agentic.thread_manager import init_thread_tracking, disable_thread_tracking, reconstruct_chat_history_from_thread_logs
+
 
 class SimpleCalculator:
     def get_tools(self):
@@ -111,14 +112,14 @@ def test_thread_logging_disabled(db_manager):
     runner.turn("What is 7 plus 2?")
     
     # Verify no threads were created
-    threads = db_manager.get_threads_by_agent("Calculator")
+    threads = db_manager.get_threads_by_agent("Calculator", user_id=None)
     assert len(threads) == 0
     
     # Run another calculation
     runner.turn("What is 15 minus 5?")
     
     # Verify still no threads
-    threads = db_manager.get_threads_by_agent("Calculator")
+    threads = db_manager.get_threads_by_agent("Calculator", user_id=None)
     assert len(threads) == 0
 
 @pytest.mark.skip("Disabling isn't supported since the Threaded agent refactor")
@@ -130,14 +131,14 @@ def test_run_logging_toggle(test_agent, db_manager, temp_db_path):
     disable_thread_tracking(test_agent)
     runner.turn("What is 3 plus 4?")
     
-    threads = db_manager.get_threads_by_agent("Calculator")
+    threads = db_manager.get_threads_by_agent("Calculator", user_id=None)
     assert len(threads) == 0
     
     # Enable logging
     init_thread_tracking(test_agent, db_path=temp_db_path)
     runner.turn("What is 8 minus 5?")
     
-    threads = db_manager.get_threads_by_agent("Calculator")
+    threads = db_manager.get_threads_by_agent("Calculator", user_id=None)
     assert len(threads) == 1
     
     # Disable logging again
@@ -181,3 +182,50 @@ def test_thread_usage_accumulation(test_agent, db_manager):
     
     assert model_usage['input_tokens'] == total_input_tokens
     assert model_usage['output_tokens'] == total_output_tokens
+
+def agent_turn(agent: Agent, request: str, thread_id: str=None) -> tuple[str, str]:
+    """Run a turn with the agent and return the response and the thread_id."""
+    results = []
+    request_id = agent.start_request(
+        request, 
+        thread_id=thread_id,
+    ).request_id
+    for event in agent.get_events(request_id):
+        if event.type == "chat_output":
+            results.append(str(event))
+    return "".join(results), agent.thread_id
+
+@pytest.mark.requires_llm
+def test_reload_history_from_thread_log(test_agent, db_manager):
+    """Test that Agent will reload its history if we pass the same thread_id into a new request."""
+    def get_weather() -> str:
+        """Get the current weather report."""
+        return "It's sunny and 75 degrees."
+    
+    test_agent.add_tool(get_weather)
+
+    # Run a simple calculation
+    res, thread_id = agent_turn(test_agent, "my name is Scott. Can you get the weather report?")
+    print(res)
+    print(agent_turn(test_agent, "Remember my favorite color is cyan."))
+       
+    # Verify the thread was created
+    threads = db_manager.get_threads_by_user("default")
+    assert len(threads) == 1
+
+    # Make a new instance of the agent, without the history
+    new_agent = test_agent.__class__(**test_agent.agent_config)
+
+    result = agent_turn(new_agent, "What is my name and my favorite color?")[0]
+    assert "Scott" not in result
+    assert "cyan" not in result
+
+    # Now pass in the thread_id to reload the history
+    agent3 = test_agent.__class__(**test_agent.agent_config)
+    
+    result = agent_turn(agent3, "What is my name and my favorite color?", thread_id=thread_id)[0]
+
+    assert "Scott" in result
+    assert "cyan" in result
+
+
