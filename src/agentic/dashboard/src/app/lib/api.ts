@@ -73,7 +73,6 @@ export const agenticApi = {
       // If no threadId is provided, we can create a new thread
       threadId = 'NEW'
     }
-    console.log("sending thread id: ", threadId);
     const response = await authFetch(`/api${agentPath}/process`, {
       method: 'POST',
       headers: {
