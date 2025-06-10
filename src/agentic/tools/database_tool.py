@@ -56,6 +56,7 @@ class DatabaseTool(BaseAgenticTool):
         return [
             self.run_database_query,
             self.get_database_type,
+            self.fetch_db_schema,
             # self.connect_to_database,
         ]
 
@@ -371,3 +372,32 @@ class DatabaseTool(BaseAgenticTool):
             return f"Failed to connect to the database: {str(e)}"
         except Exception as e:
             return f"Unexpected error while testing the connection: {str(e)}"
+
+    def fetch_db_schema(self, thread_context: ThreadContext, tables: list[str] = None) -> str | PauseForInputResult:
+        """Fetches the schema for all tables or a subset of tables in the database.
+        Returns a compact string representation:
+        table "users":
+          id int
+          name varchar
+        ...
+        """
+        from sqlalchemy import inspect
+        wait_event = self._check_missing_connection(thread_context)
+        if wait_event:
+            return wait_event
+
+        inspector = inspect(self.engine)
+        if tables is None:
+            tables = inspector.get_table_names()
+        schema_lines = []
+        for table in tables:
+            try:
+                columns = inspector.get_columns(table)
+            except Exception as e:
+                schema_lines.append(f'table "{table}":\n  <error: {e}>')
+                continue
+            schema_lines.append(f'table "{table}":')
+            for col in columns:
+                col_type = str(col["type"])
+                schema_lines.append(f'  {col["name"]} {col_type}')
+        return "\n".join(schema_lines)
