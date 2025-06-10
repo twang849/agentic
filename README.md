@@ -14,13 +14,13 @@
 Agentic makes it easy to create AI agents - autonomous software programs that understand natural language
 and can use tools to do work on your behalf.
 
-Agentic is in the tradition of _opinionated frameworks_. We've tried to encode lots of sensisible
+Agentic is in the tradition of _opinionated frameworks_. We've tried to encode lots of sensible
 defaults and best practices into the design, testing and deployment of agents. 
 
 Agentic is a few different things:
 
 - A lightweight agent framework. Same part of the stack as SmolAgents or PydanticAI.
-- A referenece implementation of the [agent protocol](https://github.com/supercog-ai/agent-protocol).
+- A reference implementation of the [agent protocol](https://github.com/supercog-ai/agent-protocol).
 - An agent runtime built on [Ray](https://github.com/ray-project/ray)
 - An optional "batteries included" set of features to help you get running quickly:
   * Built in FastAPI API for your agent
@@ -80,7 +80,7 @@ uv pip install -e "./agentic[all,dev]"
 uv pip install -e "./agentic[all,dev]" --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
-these commands will install the `agentic` package locally so that you can use the `agentic` cli command
+these commands will install the `agentic` package locally so that you can use the `agentic` CLI command
 and so your pythonpath is set correctly.
 
 ### Install the package
