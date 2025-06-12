@@ -2,6 +2,7 @@ import json
 from typing import Optional, Dict, Callable, Any, List
 from uuid import uuid4
 from litellm import Message
+import traceback
 from .events import (
     Event,
     PromptStarted,
@@ -95,16 +96,20 @@ class ThreadManager:
         elif isinstance(event, TurnEnd):
             event_data = {}
             
-        # Log the event
-        self.db_manager.log_event(
-            thread_id=thread_context.thread_id,
-            agent_id=thread_context.agent_name,
-            user_id=str(thread_context.get("user") or "default"),
-            role=role,
-            event_name=event_name,
-            event_data=event_data
-        )
-        
+        try:
+            # Log the event
+            self.db_manager.log_event(
+                thread_id=thread_context.thread_id,
+                agent_id=thread_context.agent_name,
+                user_id=str(thread_context.get("user") or "default"),
+                role=role,
+                event_name=event_name,
+                event_data=make_json_serializable(event_data)
+            )
+        except Exception as e:
+            traceback.print_exc()
+            print(f"Error logging event {event_name} for thread {thread_context.thread_id}: {e}. Data: {event_data}")
+
         # Reset usage tracking after a turn ends
         if isinstance(event, TurnEnd):
             self.usage_data = {}
@@ -203,6 +208,10 @@ def reconstruct_chat_history_from_thread_logs(thread_logs: List[ThreadLog]) -> L
         
         # Handle tool results
         elif event_name == "tool_result":
+            if isinstance(event_data, dict):
+                if event_data.get("is_log") == True:
+                    # Skip log messages
+                    continue
             # Find the corresponding tool call
             tool_name = event_data.get("name", "")
             result = event_data.get("result", "")
@@ -215,7 +224,7 @@ def reconstruct_chat_history_from_thread_logs(thread_logs: List[ThreadLog]) -> L
                     break
             
             if call_id is None:
-                call_id = f"call_{tool_name}_{tool_call_counter}"
+                continue  # Skip if no matching tool call found
             
             history.append({
                 "role": "tool",
