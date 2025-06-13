@@ -3,6 +3,12 @@ import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
+  // Configure NextAuth to use Google as the OAuth provider
+  // This handles login, token exchange, and session creation
+  // Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET to .env.local
+
+
+
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,

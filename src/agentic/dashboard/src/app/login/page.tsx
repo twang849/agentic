@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import { Button } from '@/components/ui/button';
 
-
+// Loads when user redirected to /login
 export default function LoginPage() {
   return (
     <div className="h-screen flex flex-col items-center justify-center">

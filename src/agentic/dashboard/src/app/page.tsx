@@ -27,6 +27,7 @@ export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Login redirection logic
   // Redirect if not authenticated
   if (status === "loading") {
     return <div>Loading...</div>;
