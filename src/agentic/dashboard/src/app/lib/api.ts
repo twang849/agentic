@@ -22,7 +22,7 @@ export enum AgentEventType {
 // Create a wrapper around fetch that handles authentication
 const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
   // For now, have the JWT always be retrieved from the endpoint
-  let jwt = "";
+  let jwt = '';
 
   // If JWT is empty or null, attempt to get it from nextjs API endpoint /api/token
   if (!jwt) {
