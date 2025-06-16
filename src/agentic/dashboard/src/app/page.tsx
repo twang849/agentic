@@ -1,6 +1,6 @@
 'use client'
-import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, CircleDashed, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { mutate } from 'swr';
@@ -11,7 +11,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAgentsWithDetails } from '@/hooks/useAgentData';
-
 
 
 export default function Home() {
@@ -29,16 +28,14 @@ export default function Home() {
 
   // Login redirection logic
   // Redirect if not authenticated
-  if (status === "loading") {
+  if (status === 'loading') {
     return <div>Loading...</div>;
   }
-  if (status === "unauthenticated" && typeof window !== "undefined" && !localStorage.getItem('agentic-guest')) {
+  if (status === 'unauthenticated' && typeof window !== 'undefined' && !localStorage.getItem('agentic-guest')) {
     router.replace('/login');
     return null;
   }
 
-
-  
   // Set initial selected agent when data loads
   if (agents && agents.length > 0 && !selectedAgent) {
     setSelectedAgent(agents[0].path);
@@ -64,17 +61,17 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <CircleDashed className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className='flex h-screen items-center justify-center'>
+        <CircleDashed className='h-6 w-6 animate-spin text-muted-foreground' />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center p-4">
-        <Alert variant="destructive" className="max-w-md">
-          <AlertCircle className="h-4 w-4" />
+      <div className='flex h-screen items-center justify-center p-4'>
+        <Alert variant='destructive' className='max-w-md'>
+          <AlertCircle className='h-4 w-4' />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
             Failed to load agents. Is the Agentic server running?
@@ -86,8 +83,8 @@ export default function Home() {
 
   if (!agents || agents.length === 0) {
     return (
-      <div className="flex h-screen items-center justify-center p-4">
-        <Alert className="max-w-md">
+      <div className='flex h-screen items-center justify-center p-4'>
+        <Alert className='max-w-md'>
           <AlertTitle>No Agents Available</AlertTitle>
           <AlertDescription>
             Start some agents using &apos;agentic serve&apos;
@@ -100,20 +97,20 @@ export default function Home() {
   const selectedAgentInfo = agents.find(a => a.path === selectedAgent)?.info;
 
   return (
-    <div className="flex h-screen">
+    <div className='flex h-screen'>
       {/* Mobile Menu Button (fixed position) */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      <div className='md:hidden fixed top-4 left-4 z-50'>
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetTrigger asChild>
             <Button
-              variant="ghost" 
-              size="icon"
-              className="bg-background"
+              variant='ghost' 
+              size='icon'
+              className='bg-background'
             >
-              <Menu className="h-6 w-6" />
+              <Menu className='h-6 w-6' />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="pt-1 pb-0 px-0 w-64">
+          <SheetContent side='left' className='pt-1 pb-0 px-0 w-64'>
             <AgentSidebar 
               agents={agents}
               selectedAgent={selectedAgent}
@@ -133,7 +130,7 @@ export default function Home() {
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:block w-64 border-r">
+      <div className='hidden md:block w-64 border-r'>
         <AgentSidebar 
           agents={agents}
           selectedAgent={selectedAgent}
@@ -147,9 +144,9 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className='flex-1 flex flex-col'>
         {selectedAgent && selectedAgentInfo && (
-          <div className="h-full">
+          <div className='h-full'>
             <AgentChat 
               agentPath={selectedAgent} 
               agentInfo={selectedAgentInfo}

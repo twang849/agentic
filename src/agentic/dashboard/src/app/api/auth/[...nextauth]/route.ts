@@ -1,22 +1,25 @@
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import GitHubProvider from 'next-auth/providers/github';
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   // Configure NextAuth to use Google as the OAuth provider
   // This handles login, token exchange, and session creation
   // Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET to .env.local
 
-
-
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID ?? "",
+      clientSecret: process.env.GITHUB_SECRET ?? "",
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token, profile }) {

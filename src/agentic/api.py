@@ -57,14 +57,16 @@ class AgentAPIServer:
         """
         Call "lookup_user" from our caller to resolve the current user ID based on the Authorization header.
         """
+        # print("Authorization: " + str(authorization != None))
+        # print("Lookup_user: " + str(self.lookup_user))
         if authorization is None or self.lookup_user is None:
             return None
+        
+        token = authorization
+        if token.startswith("Bearer "):
+            token = token[7:]
             
         # Here you would implement your actual authorization logic
-        if authorization.startswith("Bearer "):
-            token = authorization.replace("Bearer ", "")
-        else:
-            token = authorization
         
         # Call the lookup_user function to resolve the user ID
         # call async if needed
@@ -121,11 +123,6 @@ class AgentAPIServer:
         async def list_endpoints():
             """Discovery endpoint that lists all available agents"""
             return [f"/{name}" for name in self.agent_registry.keys()]
-        
-        @self.app.post("/login")
-        async def login():
-            """Just generates a random token to represent the current user"""
-            return {"token": str(uuid.uuid4())}
         
         @self.app.get("/{agent_name}/oauth/callback/{tool_name}")
         async def handle_oauth_static_callback(

@@ -23,22 +23,17 @@ export enum AgentEventType {
 const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
   // Try to get JWT from storage
   let jwt = localStorage.getItem('auth_token');
-  
-  // If JWT is empty or null, attempt to get it from login endpoint
+
+  // If JWT is empty or null, attempt to get it from nextjs API endpoint /api/token
   if (!jwt) {
     try {
-      const loginResponse = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${googleIdToken}` 
-        },
-        // Add any credentials or info needed for authentication
-        body: '',
+      const loginResponse = await fetch('/api/token', {
+        method: 'GET',
       });
       
       if (loginResponse.ok) {
         const authData = await loginResponse.json();
+        console.log(authData  );
         jwt = authData.token; // Adjust based on your API response structure
         
         // Store the JWT for future use

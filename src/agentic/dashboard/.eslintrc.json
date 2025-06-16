@@ -7,11 +7,11 @@
   ],
   "rules": {
     "quotes": ["error", "single"],
-    "no-unused-vars": "off",
+    // "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": ["error", { "allow": ["warn", "error", "debug"] }],
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    // "simple-import-sort/imports": "error",
+    // "simple-import-sort/exports": "error"
   },
   "globals": {
     "Api": "readonly",
