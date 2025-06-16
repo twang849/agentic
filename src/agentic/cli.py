@@ -9,7 +9,7 @@ from rich.console import Console
 from typing import Any, Dict, Optional, List
 from .file_cache import file_cache
 from .colors import Colors
-from jose.jwe import decrypt, encrypt
+from jose.jwe import decrypt
 from hkdf import Hkdf
 
 import agentic.quiet_warnings
