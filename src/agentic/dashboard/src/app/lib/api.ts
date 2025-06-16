@@ -33,7 +33,6 @@ const authFetch = async (url: string, options: RequestInit = {}): Promise<Respon
       
       if (loginResponse.ok) {
         const authData = await loginResponse.json();
-        console.log(authData  );
         jwt = authData.token; // Adjust based on your API response structure
         
         // Store the JWT for future use
