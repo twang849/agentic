@@ -19,7 +19,7 @@ export enum AgentEventType {
   WAIT_FOR_INPUT = 'wait_for_input'
 }
 
-const getJwtToken = async (route: string, url: string, options: RequestInit = {}) => {
+const getJwtToken = async (route: string, url: string) => {
   try {
       const loginResponse = await fetch(`/api/${route}`, {
         method: 'GET',
@@ -34,7 +34,7 @@ const getJwtToken = async (route: string, url: string, options: RequestInit = {}
         console.error('Failed to retrieve JWT token');
       }
     } catch (error) {
-      console.error('Error during authentication:', error);;
+      console.error('Error during authentication:', error);
     }
 }
 
@@ -45,7 +45,7 @@ const authFetch = async (url: string, options: RequestInit = {}): Promise<Respon
   // If JWT is empty or null, attempt to get it from nextjs API endpoint /api/token
   if (!jwt) {
     // The 'route' parameter ('login') indicates where to retrieve the token from, either the legacy /api/login endpoint or /api/token
-    jwt = await getJwtToken('login', url, options);
+    jwt = await getJwtToken('login', url);
 
      // Store the JWT for future use
     if (jwt) {
@@ -55,10 +55,8 @@ const authFetch = async (url: string, options: RequestInit = {}): Promise<Respon
 
   // If jwt still null, try the new route
   if (!jwt) {
-    // The 'route' parameter ()
-    jwt = await getJwtToken('token', url, options);
-    console.log('C');
-     // Store the JWT for future use
+    jwt = await getJwtToken('token', url);
+
     if (jwt) {
       localStorage.setItem('auth_token', jwt);
     }

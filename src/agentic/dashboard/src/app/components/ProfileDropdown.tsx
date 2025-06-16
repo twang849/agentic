@@ -2,6 +2,7 @@ import { User } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from './ui/button';
 
 export default function ProfileDropdown() {
     const { data: session } = useSession();
@@ -11,9 +12,9 @@ export default function ProfileDropdown() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className='rounded-full border bg-white shadow p-2 flex items-center'>
+          <Button className='rounded-full bg-gray-500 shadow p-2 flex items-center'>
             <User className='h-5 w-6 ' />
-          </button>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='min-w-[180px]'>
           <DropdownMenuLabel>
