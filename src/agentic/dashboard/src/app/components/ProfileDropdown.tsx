@@ -13,7 +13,6 @@ export default function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <button className='rounded-full border bg-white shadow p-2 flex items-center'>
             <User className='h-5 w-6 ' />
-            {/* <span className='font-medium'>{userName}</span> */}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='min-w-[180px]'>

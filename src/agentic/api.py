@@ -14,6 +14,8 @@ from agentic.events import AgentDescriptor, DebugLevel
 from agentic.utils.json import make_json_serializable
 from agentic.swarm.types import ThreadContext
 from agentic.db.db_manager import DatabaseManager
+from hkdf import Hkdf
+from jose.jwe import encrypt
 
 from agentic.events import (
     ToolResult,
@@ -57,8 +59,6 @@ class AgentAPIServer:
         """
         Call "lookup_user" from our caller to resolve the current user ID based on the Authorization header.
         """
-        # print("Authorization: " + str(authorization != None))
-        # print("Lookup_user: " + str(self.lookup_user))
         if authorization is None or self.lookup_user is None:
             return None
         
@@ -123,7 +123,30 @@ class AgentAPIServer:
         async def list_endpoints():
             """Discovery endpoint that lists all available agents"""
             return [f"/{name}" for name in self.agent_registry.keys()]
-        
+            
+
+        @self.app.get("/login", deprecated=True)
+        async def login():
+            """Legacy endpoint that mimics the Nextjs /api/token endpoint. Will be removed in future releases."""
+            def __encryption_key(secret: str):
+                return Hkdf("", bytes(secret, "utf-8")).expand(b"NextAuth.js Generated Encryption Key", 32)
+
+            def encode_jwe(payload: Dict[str, Any], secret: str):
+                data = bytes(json.dumps(payload), "utf-8")
+                key = __encryption_key(secret)
+                return bytes.decode(encrypt(data, key), "utf-8")
+            
+            payload = {
+                "sub": str(uuid.uuid4()),  # random user id
+                "legacy": True,            # mark as legacy token
+            }
+
+            token = encode_jwe(payload, os.environ['AUTH_SECRET'])
+            return {
+                "token": token,
+                "warning": "This endpoint is deprecated and will be removed in a future release."
+            }
+
         @self.app.get("/{agent_name}/oauth/callback/{tool_name}")
         async def handle_oauth_static_callback(
             agent_name: str,

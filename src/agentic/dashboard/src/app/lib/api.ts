@@ -19,31 +19,48 @@ export enum AgentEventType {
   WAIT_FOR_INPUT = 'wait_for_input'
 }
 
-// Create a wrapper around fetch that handles authentication
-const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
-  // For now, have the JWT always be retrieved from the endpoint
-  let jwt = '';
-
-  // If JWT is empty or null, attempt to get it from nextjs API endpoint /api/token
-  if (!jwt) {
-    try {
-      const loginResponse = await fetch('/api/token', {
+const getJwtToken = async (route: string, url: string, options: RequestInit = {}) => {
+  try {
+      const loginResponse = await fetch(`/api/${route}`, {
         method: 'GET',
       });
       
       if (loginResponse.ok) {
         const authData = await loginResponse.json();
-        jwt = authData.token; // Adjust based on your API response structure
-        
-        // Store the JWT for future use
-        if (jwt) {
-          localStorage.setItem('auth_token', jwt);
-        }
+        const jwt = authData.token; // Adjust based on your API response structure
+        return jwt;
+
       } else {
         console.error('Failed to retrieve JWT token');
       }
     } catch (error) {
-      console.error('Error during authentication:', error);
+      console.error('Error during authentication:', error);;
+    }
+}
+
+// Create a wrapper around fetch that handles authentication
+const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  let jwt = localStorage.getItem('auth_token');
+
+  // If JWT is empty or null, attempt to get it from nextjs API endpoint /api/token
+  if (!jwt) {
+    // The 'route' parameter ('login') indicates where to retrieve the token from, either the legacy /api/login endpoint or /api/token
+    jwt = await getJwtToken('login', url, options);
+
+     // Store the JWT for future use
+    if (jwt) {
+      localStorage.setItem('auth_token', jwt);
+    } 
+  }
+
+  // If jwt still null, try the new route
+  if (!jwt) {
+    // The 'route' parameter ()
+    jwt = await getJwtToken('token', url, options);
+    console.log('C');
+     // Store the JWT for future use
+    if (jwt) {
+      localStorage.setItem('auth_token', jwt);
     }
   }
   
