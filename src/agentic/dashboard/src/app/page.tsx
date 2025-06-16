@@ -1,7 +1,6 @@
 'use client'
 import { AlertCircle, CircleDashed, Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { mutate } from 'swr';
 
@@ -18,12 +17,9 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentThreadId, setCurrentThreadId] = useState<string | undefined>();
 
-  // Use our custom hook to fetch agent data
-  // const [currentRunId, setCurrentRunId] = useState<string | undefined>();
     // Use our custom hook to fetch agent data
   const { agents, error, isLoading } = useAgentsWithDetails();
 
-  // const { data: session, status } = useSession();
   const router = useRouter();
 
   // Login redirection logic

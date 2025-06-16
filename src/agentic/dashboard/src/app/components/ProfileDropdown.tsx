@@ -1,6 +1,5 @@
 import { User } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react';
-import { useEffect } from 'react';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -8,16 +7,6 @@ export default function ProfileDropdown() {
     const { data: session } = useSession();
   
     const userName = session?.user?.name ?? 'Guest';
-
-    useEffect(() => {
-      async function fetchToken() {
-        const res = await fetch('/api/token', { credentials: 'include' });
-        // const data = await res.json();
-        // console.log('NextAuth JWT token:', data.token); 
-        // console.log('NextAuth JWT token:', data); 
-      }
-      fetchToken();
-    }, []);
     
     return (
       <DropdownMenu>
