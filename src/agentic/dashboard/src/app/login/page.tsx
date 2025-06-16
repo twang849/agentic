@@ -1,7 +1,8 @@
 'use client'
-import { signIn } from "next-auth/react";
+import Image from 'next/image';
+import { signIn } from 'next-auth/react';
+
 import { Button } from '@/components/ui/button';
-import Image from "next/image";
 
 // Loads when user redirected to /login
 export default function LoginPage() {
