@@ -1,6 +1,7 @@
 'use client'
 import { AlertCircle, CircleDashed, Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { mutate } from 'swr';
 
@@ -20,6 +21,7 @@ export default function Home() {
     // Use our custom hook to fetch agent data
   const { agents, error, isLoading } = useAgentsWithDetails();
 
+  const { status } = useSession();
   const router = useRouter();
 
   // Login redirection logic
